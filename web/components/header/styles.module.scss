@@ -1,0 +1,39 @@
+.header {
+  min-height: 1rem;
+  
+  .navbar {
+    background-color: #f0f8ff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    position: fixed;
+    margin-bottom: 10vh;
+    width: 100vw;
+    min-height: 4rem;
+
+    .logo {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      padding: .5rem; 
+      margin: .5rem;   
+
+      .mangoLogo {
+        padding: 0;
+        margin: 0;
+      }
+    
+      h3 {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: linear-gradient(350deg, #ebf1ff00, #1144bb);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;     
+      }
+    }
+  }
+}
