@@ -8,9 +8,18 @@ import TaskList from '@/components/task-list'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const StatusOptions = {
+  UNFINISHED: 'Unfinished',
+  INPROGRESS: 'In progress',
+  REVIEWING: 'Reviewing',
+  DONE: 'Done',
+};
 
-const issue = {description: "stuff", status: "unfinished"};
-const issues = {tasks: [issue, issue, issue], status: "unfinished"}
+const issueOne = {description: "finished the thing I was working on", status: StatusOptions.UNFINISHED};
+const issueTwo = {description: "made it through to gym today", status: StatusOptions.UNFINISHED};
+const issueThree = {description: "ate a lot of great food, but I'm focused on working it off", status: StatusOptions.UNFINISHED};
+const issueFour = {description: "stuff", status: StatusOptions.UNFINISHED};
+const issues = {tasks: [issueOne, issueTwo, issueThree, issueFour], status: StatusOptions.UNFINISHED}
 //ideal payload:
 // issue = {description, date, status}
 
