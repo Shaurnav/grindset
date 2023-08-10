@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.scss'
 import Header from '@/components/header'
-import Task from '@/components/task-list/task'
-import TaskList from '@/components/task-list'
+import Task from '@/components/task-list-set/task-list/task'
+import TaskList from '@/components/task-list-set/task-list'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -15,10 +15,10 @@ export const StatusOptions = {
   DONE: 'Done',
 };
 
-const issueOne = {description: "finished the thing I was working on", status: StatusOptions.UNFINISHED};
-const issueTwo = {description: "made it through to gym today", status: StatusOptions.UNFINISHED};
-const issueThree = {description: "ate a lot of great food, but I'm focused on working it off", status: StatusOptions.UNFINISHED};
-const issueFour = {description: "stuff", status: StatusOptions.UNFINISHED};
+const issueOne = {description: "finished the thing I was working on", status: StatusOptions.UNFINISHED, id: 1, index: 0};
+const issueTwo = {description: "made it through to gym today", status: StatusOptions.UNFINISHED, id: 2, index: 1};
+const issueThree = {description: "ate a lot of great food, but I'm focused on working it off", status: StatusOptions.UNFINISHED, id: 3, index: 2};
+const issueFour = {description: "stuff", status: StatusOptions.UNFINISHED, id: 4, index: 3};
 const issues = {tasks: [issueOne, issueTwo, issueThree, issueFour], status: StatusOptions.UNFINISHED}
 //ideal payload:
 // issue = {description, date, status}
@@ -34,7 +34,7 @@ export default function Home() {
       </Head>
       <Header/>
       <main className={`${styles.main}`}>
-      <TaskList {...issues}></TaskList>
+        <TaskList {...issues}></TaskList>
       </main>
     </div>
   );

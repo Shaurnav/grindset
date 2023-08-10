@@ -23,9 +23,8 @@ export default function TaskList({tasks, status}: TaskListProps) {
             data-testid={`board-list:${status}`}
           >
             {tasks.map((task) => (
-              <Task {...task} />
+              <Task key={task.id} {...task} />
             ))}
-            {provided.placeholder}
           </div>
         </div>
       )}
