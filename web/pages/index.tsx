@@ -3,13 +3,14 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.scss'
 import Header from '@/components/header'
-import Task from '@/components/task'
+import Task from '@/components/task-list/task'
+import TaskList from '@/components/task-list'
 
 const inter = Inter({ subsets: ['latin'] })
 
 
-const issue = {description: "stuff"};
-
+const issue = {description: "stuff", status: "unfinished"};
+const issues = {tasks: [issue, issue, issue], status: "unfinished"}
 //ideal payload:
 // issue = {description, date, status}
 
@@ -24,7 +25,7 @@ export default function Home() {
       </Head>
       <Header/>
       <main className={`${styles.main}`}>
-      <Task {...issue}></Task>
+      <TaskList {...issues}></TaskList>
       </main>
     </div>
   );
