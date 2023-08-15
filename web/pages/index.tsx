@@ -5,53 +5,21 @@ import styles from '@/styles/Home.module.scss'
 import Header from '@/components/header'
 import Task from '@/components/task-list/task'
 import TaskList from '@/components/task-list'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
 import { IData } from '@/components/Interfaces'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const StatusOptions = {
-  UNFINISHED: 'Unfinished',
-  INPROGRESS: 'In progress',
-  REVIEWING: 'Reviewing',
-  DONE: 'Done',
-};
-
-const initialData = {
-	tasks: {
-		"task-1": { id: "task-1", description: "Take out the garbage" },
-		"task-2": { id: "task-2", description: "Watch my favorite show" },
-		"task-3": { id: "task-3", description: "Charge my phone" },
-		"task-4": { id: "task-4", description: "Cook dinner" },
-	},
-	columns: {
-		"column-1": {
-			id: "column-1",
-			title: StatusOptions.UNFINISHED,
-			taskIds: ["task-1", "task-2", "task-3", "task-4"],
-		},
-		"column-2": {
-			id: "column-2",
-			title: StatusOptions.INPROGRESS,
-			taskIds: [],
-		},
-		"column-3": {
-			id: "column-3",
-			title: StatusOptions.REVIEWING,
-			taskIds: [],
-		},
-    "column-4": {
-			id: "column-4",
-			title: StatusOptions.DONE,
-			taskIds: [],
-		},
-	},
-  columnOrder: ["column-1", "column-2", "column-3", "column-4"]
-};
-
 export default function Home() {
-  const [state, setState] = useState<IData>(initialData);
+  
+  const [state, setState] = useState<IData>();
+
+  useEffect(() => {
+    fetch('/api/taskdata')
+      .then((res) => res.json())
+      .then((data) => setState(data))
+  }, []);
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type} = result;
@@ -67,10 +35,10 @@ export default function Home() {
 			return;
 		}
     
-    const start = state.columns[source.droppableId];
-    const finish = state.columns[destination.droppableId];
+    const start = state?.columns[source.droppableId];
+    const finish = state?.columns[destination.droppableId];
     
-    if (start === finish) {
+    if (start === finish && start) {
       const newTaskIds = Array.from(start.taskIds);
       newTaskIds.splice(source.index, 1);
       newTaskIds.splice(destination.index, 0, draggableId);
@@ -83,15 +51,19 @@ export default function Home() {
       const newState = {
         ...state,
         columns: {
-          ...state.columns,
+          ...state?.columns,
           [newColumn.id]: newColumn,
         }
       };
   
+
       setState(newState);
       return;
     }
 
+    if (!start || !finish) {
+      return;
+    }
     //Moving from one column to another
     const startTaskIds = Array.from(start.taskIds);
     startTaskIds.splice(source.index, 1);
@@ -119,7 +91,6 @@ export default function Home() {
     setState(newState);
   }
 
-  //note that taskList is actually a single column right now... I know I know...
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <React.StrictMode>
@@ -133,7 +104,7 @@ export default function Home() {
           <Header/>
           <main className={styles.main}>
             <div className={styles.taskBoardContainer}>
-              {state.columnOrder.map((columnId, index) => {
+              {state?.columnOrder.map((columnId, index) => {
                 const column = state.columns[columnId];
                 const tasks = column.taskIds.map(
                   (taskId) => state.tasks[taskId]
