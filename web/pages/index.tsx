@@ -3,10 +3,11 @@ import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.scss'
 import Header from '@/components/header'
-import Task from '@/components/task-list-set/task-list/task'
-import TaskList from '@/components/task-list-set/task-list'
-import React from 'react'
-import { DragDropContext } from 'react-beautiful-dnd'
+import Task from '@/components/task-list/task'
+import TaskList from '@/components/task-list'
+import React, { useState } from 'react'
+import { DragDropContext, DropResult } from 'react-beautiful-dnd'
+import { IData } from '@/components/Interfaces'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,19 +18,72 @@ export const StatusOptions = {
   DONE: 'Done',
 };
 
-const issueOne = {description: "finished the thing I was working on", status: StatusOptions.UNFINISHED, id: 1, index: 0};
-const issueTwo = {description: "made it through to gym today", status: StatusOptions.UNFINISHED, id: 2, index: 1};
-const issueThree = {description: "ate a lot of great food, but I'm focused on working it off", status: StatusOptions.UNFINISHED, id: 3, index: 2};
-const issueFour = {description: "stuff", status: StatusOptions.UNFINISHED, id: 4, index: 3};
-const issues = {tasks: [issueOne, issueTwo, issueThree, issueFour], status: StatusOptions.UNFINISHED}
-//ideal payload:
-// issue = {description, date, status}
+const initialData = {
+	tasks: {
+		"task-1": { id: "task-1", description: "Take out the garbage" },
+		"task-2": { id: "task-2", description: "Watch my favorite show" },
+		"task-3": { id: "task-3", description: "Charge my phone" },
+		"task-4": { id: "task-4", description: "Cook dinner" },
+	},
+	columns: {
+		"column-1": {
+			id: "column-1",
+			title: StatusOptions.UNFINISHED,
+			taskIds: ["task-1", "task-2", "task-3", "task-4"],
+		},
+		"column-2": {
+			id: "column-2",
+			title: StatusOptions.INPROGRESS,
+			taskIds: [],
+		},
+		"column-3": {
+			id: "column-3",
+			title: StatusOptions.DONE,
+			taskIds: [],
+		},
+	},
+  columnOrder: ["column-1"]
+};
 
 export default function Home() {
-  const onDragEnd = (result: any) => {
-    //reorder our column
+  const [state, setState] = useState<IData>(initialData);
+
+  const onDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId} = result;
+
+		if (!destination) {
+			return;
+		}
+
+		if (
+			destination.droppableId === source.droppableId &&
+			destination.index === source.index
+		) {
+			return;
+		}
+    
+    const column = state.columns[source.droppableId];
+    const newTaskIds = Array.from(column.taskIds);
+    newTaskIds.splice(source.index, 1);
+    newTaskIds.splice(destination.index, 0, draggableId);
+
+    const newColumn = {
+      ...column,
+      taskIds: newTaskIds,
+    };
+
+    const newState = {
+      ...state,
+      columns: {
+        ...state.columns,
+        [newColumn.id]: newColumn,
+      }
+    };
+
+    setState(newState);
   }
 
+  //note that taskList is actually a single column right now... I know I know...
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <React.StrictMode>
@@ -42,7 +96,21 @@ export default function Home() {
           </Head>
           <Header/>
           <main className={`${styles.main}`}>
-            <TaskList {...issues}></TaskList>
+            {state.columnOrder.map((columnId, index) => {
+              const column = state.columns[columnId];
+              const tasks = column.taskIds.map(
+                (taskId) => state.tasks[taskId]
+              );
+
+              return (
+                <TaskList
+                  key={column.id}
+                  column={column}
+                  tasks={tasks}
+                  index={index}
+                />
+              );
+            })}
           </main>
         </div>
       </React.StrictMode>

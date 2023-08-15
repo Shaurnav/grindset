@@ -1,8 +1,6 @@
 export interface ITask {
 	description: string;
-	status: string;
-	id: number;
-	index: number;
+	id: string;
 }
 export interface ITasks {
 	[taskName: string]: ITask;
