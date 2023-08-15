@@ -38,18 +38,23 @@ const initialData = {
 		},
 		"column-3": {
 			id: "column-3",
+			title: StatusOptions.REVIEWING,
+			taskIds: [],
+		},
+    "column-4": {
+			id: "column-4",
 			title: StatusOptions.DONE,
 			taskIds: [],
 		},
 	},
-  columnOrder: ["column-1"]
+  columnOrder: ["column-1", "column-2", "column-3", "column-4"]
 };
 
 export default function Home() {
   const [state, setState] = useState<IData>(initialData);
 
   const onDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId} = result;
+    const { destination, source, draggableId, type} = result;
 
 		if (!destination) {
 			return;
@@ -62,23 +67,54 @@ export default function Home() {
 			return;
 		}
     
-    const column = state.columns[source.droppableId];
-    const newTaskIds = Array.from(column.taskIds);
-    newTaskIds.splice(source.index, 1);
-    newTaskIds.splice(destination.index, 0, draggableId);
+    const start = state.columns[source.droppableId];
+    const finish = state.columns[destination.droppableId];
+    
+    if (start === finish) {
+      const newTaskIds = Array.from(start.taskIds);
+      newTaskIds.splice(source.index, 1);
+      newTaskIds.splice(destination.index, 0, draggableId);
+  
+      const newColumn = {
+        ...start,
+        taskIds: newTaskIds,
+      };
+  
+      const newState = {
+        ...state,
+        columns: {
+          ...state.columns,
+          [newColumn.id]: newColumn,
+        }
+      };
+  
+      setState(newState);
+      return;
+    }
 
-    const newColumn = {
-      ...column,
-      taskIds: newTaskIds,
+    //Moving from one column to another
+    const startTaskIds = Array.from(start.taskIds);
+    startTaskIds.splice(source.index, 1);
+    const newStart = {
+      ...start,
+      taskIds: startTaskIds,
     };
+
+    const finishTaskIds = Array.from(finish.taskIds);
+    finishTaskIds.splice(destination.index, 0, draggableId);
+    const newFinish = {
+      ...finish, 
+      taskIds: finishTaskIds,
+    }
 
     const newState = {
       ...state,
       columns: {
         ...state.columns,
-        [newColumn.id]: newColumn,
+        [newStart.id]: newStart,
+        [newFinish.id]: newFinish,  
       }
-    };
+    }
 
     setState(newState);
   }
@@ -95,22 +131,24 @@ export default function Home() {
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <Header/>
-          <main className={`${styles.main}`}>
-            {state.columnOrder.map((columnId, index) => {
-              const column = state.columns[columnId];
-              const tasks = column.taskIds.map(
-                (taskId) => state.tasks[taskId]
-              );
+          <main className={styles.main}>
+            <div className={styles.taskBoardContainer}>
+              {state.columnOrder.map((columnId, index) => {
+                const column = state.columns[columnId];
+                const tasks = column.taskIds.map(
+                  (taskId) => state.tasks[taskId]
+                );
 
-              return (
-                <TaskList
-                  key={column.id}
-                  column={column}
-                  tasks={tasks}
-                  index={index}
-                />
-              );
-            })}
+                return (
+                  <TaskList
+                    key={column.id}
+                    column={column}
+                    tasks={tasks}
+                    index={index}
+                  />
+                );
+              })}
+            </div>
           </main>
         </div>
       </React.StrictMode>

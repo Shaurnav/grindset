@@ -17,7 +17,7 @@ export default function TaskList({tasks, column, index}: TaskListProps) {
       {provided => (
         <div className={styles.list}>
           <div className={styles.title}>
-            {column.id}
+            {column.title}
           </div>
           <div className={styles.tasks}
             {...provided.droppableProps}
