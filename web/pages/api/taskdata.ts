@@ -9,37 +9,37 @@ const StatusOptions = {
   DONE: 'Done',
 };
 
-// const initialData = {
-// 	tasks: {
-// 		"task-1": { id: "task-1", description: "Take out the garbage" },
-// 		"task-2": { id: "task-2", description: "Watch my favorite show" },
-// 		"task-3": { id: "task-3", description: "Charge my phone" },
-// 		"task-4": { id: "task-4", description: "Cook dinner" },
-// 	},
-// 	columns: {
-// 		"column-1": {
-// 			id: "column-1",
-// 			title: StatusOptions.UNFINISHED,
-// 			taskIds: ["task-1", "task-2", "task-3", "task-4"],
-// 		},
-// 		"column-2": {
-// 			id: "column-2",
-// 			title: StatusOptions.INPROGRESS,
-// 			taskIds: [],
-// 		},
-// 		"column-3": {
-// 			id: "column-3",
-// 			title: StatusOptions.REVIEWING,
-// 			taskIds: [],
-// 		},
-//     "column-4": {
-// 			id: "column-4",
-// 			title: StatusOptions.DONE,
-// 			taskIds: [],
-// 		},
-// 	},
-//   columnOrder: ["column-1", "column-2", "column-3", "column-4"]
-// };
+const trueData = {
+	tasks: {
+		"task-1": { id: "task-1", description: "Take out the garbage" },
+		"task-2": { id: "task-2", description: "Watch my favorite show" },
+		"task-3": { id: "task-3", description: "Charge my phone" },
+		"task-4": { id: "task-4", description: "Cook dinner" },
+	},
+	columns: {
+		"column-1": {
+			id: "column-1",
+			title: StatusOptions.UNFINISHED,
+			taskIds: ["task-1", "task-2", "task-3", "task-4"],
+		},
+		"column-2": {
+			id: "column-2",
+			title: StatusOptions.INPROGRESS,
+			taskIds: [],
+		},
+		"column-3": {
+			id: "column-3",
+			title: StatusOptions.REVIEWING,
+			taskIds: [],
+		},
+    "column-4": {
+			id: "column-4",
+			title: StatusOptions.DONE,
+			taskIds: [],
+		},
+	},
+  columnOrder: ["column-1", "column-2", "column-3", "column-4"]
+};
 
 const fetchData = async () => {
 	let { data: tasks } = await supabase
@@ -66,17 +66,78 @@ const fetchData = async () => {
 	return initialData;
 };
 
+const updateTasks = async (state: IData) => {
+ 
+
+	let updatedDescriptions: {id: number, description: string}[] = [];
+
+	for (const key in state.tasks) {
+		const taskDBid = parseInt(state.tasks[key].id.split("task-")[1]);
+		updatedDescriptions.push({ id: taskDBid, description: state.tasks[key].description});
+	}
+
+	//update tasks table
+	const { data , error } = await supabase
+	.from('tasks')
+	.upsert(updatedDescriptions)
+	.select();
+	
+	
+	//update column.tasks column...
+	const columnUpdatePromises = state.columnOrder.map(async (columnId) => {
+		const { data, error } = await supabase
+		.from('columns')
+		.update({ taskIds: state.columns[columnId].taskIds})
+		.eq('id', columnId)
+		.select()
+
+		return {data, error}
+	});
+
+	const updatedColumns = Promise.all(columnUpdatePromises);	
+
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	
-	if (req.body === 'POST') {
-		const { data , error } = await supabase
-		.from('tasks')
-		.upsert({ description: 'sample things' })
-		.select();
-	
-		console.log(error);
+	const sampleData = {
+		tasks: {
+			"task-1": { id: "task-1", description: "Take out the garbage" },
+			"task-2": { id: "task-2", description: "Watch my favorite show" },
+			"task-3": { id: "task-3", description: "Charge my phone" },
+			"task-4": { id: "task-4", description: "Cook dinner" },
+			"task-5": { id: "task-5", description: "I'm cooking dinner" },
+			"task-6": { id: "task-6", description: "Eat food"}
+		},
+		columns: {
+			"column-1": {
+				id: "column-1",
+				title: StatusOptions.UNFINISHED,
+				taskIds: ["task-2", "task-3", "task-4"],
+			},
+			"column-2": {
+				id: "column-2",
+				title: StatusOptions.INPROGRESS,
+				taskIds: ["task-1"],
+			},
+			"column-3": {
+				id: "column-3",
+				title: StatusOptions.REVIEWING,
+				taskIds: ["task-5"],
+			},
+			"column-4": {
+				id: "column-4",
+				title: StatusOptions.DONE,
+				taskIds: ["task-6"],
+			},
+		},
+		columnOrder: ["column-1", "column-2", "column-3", "column-4"]
+	};
+
+	if (req.body !== 'POST') {
+		await updateTasks(sampleData);
 	}
 	
 	const initialData = await fetchData();
+	console.log(trueData);
   return res.status(200).json(initialData);
 }

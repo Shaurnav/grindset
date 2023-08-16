@@ -95,6 +95,8 @@ export default function TaskBoard() {
             const tasks = column.taskIds.map(
               (taskId) => state.tasks[taskId]
             );
+            
+            console.table(column);
 
             return (
               <TaskList
