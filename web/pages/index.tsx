@@ -1,11 +1,8 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.scss'
 import Header from '@/components/header'
-import Task from '@/components/task-list/task'
-import TaskList from '@/components/task-list'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import TaskBoard from '@/components/task-board'
 import TaskAdd from '@/components/task-add'
 
