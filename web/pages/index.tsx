@@ -7,6 +7,7 @@ import Task from '@/components/task-list/task'
 import TaskList from '@/components/task-list'
 import React, { useEffect, useState } from 'react'
 import TaskBoard from '@/components/task-board'
+import TaskAdd from '@/components/task-add'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +24,7 @@ export default function Home() {
         <Header/>
         <main className={styles.main}>
           <TaskBoard/>
+          <TaskAdd/>
         </main>
       </div> 
   );
