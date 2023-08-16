@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { createClient } from '@supabase/supabase-js'
 import { IColumns, IData, ITasks } from "@/components/Interfaces";
-const supabaseUrl = 'https://ytxaxnjhovynzpvqqicj.supabase.co';
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_KEY as string;
-const supabase = createClient(supabaseUrl, supabaseKey);
+import supabase from '@/supabase'
 
 const StatusOptions = {
   UNFINISHED: 'Unfinished',

@@ -1,7 +1,7 @@
 .taskAddContainer {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: center;
   margin: 1rem;
   padding: 1rem;
   width: 100%;
@@ -9,6 +9,7 @@
   button {
     height: 4rem;
     margin: .5rem;
+    padding: 1rem;
     width: 4rem;
   }
 
