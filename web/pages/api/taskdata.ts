@@ -41,7 +41,7 @@ const StatusOptions = {
 //   columnOrder: ["column-1", "column-2", "column-3", "column-4"]
 // };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+const fetchData = async () => {
 	let { data: tasks } = await supabase
 	.from('tasks')
 	.select('*');
@@ -54,7 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	let initalDataColumns: IColumns = {};
 	const initialDataColumnOrder = ["column-1", "column-2", "column-3", "column-4"];
 
-	tasks?.map(({id, description}) => { initialDataTasks[id] = {id, description}});
+	tasks?.map(({id, description}) => { initialDataTasks[`task-${id}`] = {id: `task-${id}`, description}});
 	columns?.map(({id, title, taskIds}) => { initalDataColumns[id] = {id, title, taskIds}});
 
 	const initialData: IData = {
@@ -63,5 +63,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		columnOrder: initialDataColumnOrder
 	};
 
+	return initialData;
+};
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	
+	if (req.body === 'POST') {
+		const { data , error } = await supabase
+		.from('tasks')
+		.upsert({ description: 'sample things' })
+		.select();
+	
+		console.log(error);
+	}
+	
+	const initialData = await fetchData();
   return res.status(200).json(initialData);
 }

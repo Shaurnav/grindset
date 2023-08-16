@@ -57,6 +57,7 @@ export default function TaskBoard() {
     if (!start || !finish) {
       return;
     }
+
     //Moving from one column to another
     const startTaskIds = Array.from(start.taskIds);
     startTaskIds.splice(source.index, 1);
@@ -80,6 +81,7 @@ export default function TaskBoard() {
         [newFinish.id]: newFinish,  
       }
     }
+
 
     setState(newState);
   }
