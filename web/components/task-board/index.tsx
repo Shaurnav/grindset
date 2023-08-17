@@ -4,15 +4,30 @@ import { useEffect, useState } from 'react';
 import { IData } from '../Interfaces';
 import TaskList from '../task-list';
 import React from 'react';
+import TaskAdd from '../task-add';
+
+
+//TODO: optimize useEffect efficiency structure...
 
 export default function TaskBoard() {
   const [state, setState] = useState<IData>();
+  const [totalTasks, setTotalTasks] = useState(0);
 
   useEffect(() => {
     fetch('/api/taskdata')
-      .then((res) => res.json())
-      .then((data) => setState(data))
-  }, []);
+    .then((res) => res.json())
+    .then((data) => {
+      setState(data);
+
+      //maybe we're not using useEffect here correctly...
+      const totals = state?.columnOrder.map((columnId) => state?.columns[columnId].taskIds.length);
+      
+      if (totals !== undefined && state !== undefined) {
+        const count = totals?.reduce((prevVal, val) => prevVal + val);
+        setTotalTasks(count);  
+      }
+    })
+  }, [totalTasks]);
 
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type} = result;
@@ -117,8 +132,6 @@ export default function TaskBoard() {
             const tasks = column.taskIds.map(
               (taskId) => state.tasks[taskId]
             );
-            
-            console.table(column);
 
             return (
               <TaskList
@@ -130,6 +143,9 @@ export default function TaskBoard() {
             );
           })}
         </div>
+        {/* I wonder what's the better practice here */}
+        <TaskAdd state={state} setState={setState} totalTasks={totalTasks} setTotalTasks={setTotalTasks}/>
+        <h1>{totalTasks}</h1>
       </React.StrictMode>
     </DragDropContext>
   );

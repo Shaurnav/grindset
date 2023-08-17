@@ -21,7 +21,6 @@ export default function Home() {
         <Header/>
         <main className={styles.main}>
           <TaskBoard/>
-          <TaskAdd/>
         </main>
       </div> 
   );

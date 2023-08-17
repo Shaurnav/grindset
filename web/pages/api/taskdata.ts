@@ -93,14 +93,48 @@ const updateTasks = async (state: IData) => {
 	});
 
 	const updatedColumns = Promise.all(columnUpdatePromises);	
-
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === 'PUT') {
 		await updateTasks(req.body);
-	} 
+	}  else if (req.method === 'POST') {
+		const {data: addedTask, error: taskAddingError} = await supabase
+		.from('tasks')
+		.insert(req.body)
+		.select();
 
+		//if there was an error with added task
+		if (addedTask === null) {
+			return res.status(500).json(taskAddingError);
+		}
+
+		const addedTaskId = `task-${addedTask[0].id}`
+		//unfinished column
+		const {data: taskIdData, error: getColumnError} = await supabase
+		.from('columns')
+		.select('taskIds')
+		.eq('id', 'column-1');
+
+		const taskIds = taskIdData?.at(0)?.taskIds;
+
+		if (taskIds === undefined) {
+			return res.status(500).json(getColumnError);
+		}
+
+		taskIds.push(addedTaskId);
+		//update said column...
+		const {data: updatedColumn, error: columnUpdatingError} = await supabase
+		.from('columns')
+		.update({taskIds: taskIds})
+		.eq('id', 'column-1')
+		.select();
+
+		if (updatedColumn === null) {
+			return res.status(500).json(columnUpdatingError);
+		} 
+	}
+	
 	const data = await fetchData();
 
   return res.status(200).json(data);
