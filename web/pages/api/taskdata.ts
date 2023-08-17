@@ -9,37 +9,37 @@ const StatusOptions = {
   DONE: 'Done',
 };
 
-const trueData = {
-	tasks: {
-		"task-1": { id: "task-1", description: "Take out the garbage" },
-		"task-2": { id: "task-2", description: "Watch my favorite show" },
-		"task-3": { id: "task-3", description: "Charge my phone" },
-		"task-4": { id: "task-4", description: "Cook dinner" },
-	},
-	columns: {
-		"column-1": {
-			id: "column-1",
-			title: StatusOptions.UNFINISHED,
-			taskIds: ["task-1", "task-2", "task-3", "task-4"],
-		},
-		"column-2": {
-			id: "column-2",
-			title: StatusOptions.INPROGRESS,
-			taskIds: [],
-		},
-		"column-3": {
-			id: "column-3",
-			title: StatusOptions.REVIEWING,
-			taskIds: [],
-		},
-    "column-4": {
-			id: "column-4",
-			title: StatusOptions.DONE,
-			taskIds: [],
-		},
-	},
-  columnOrder: ["column-1", "column-2", "column-3", "column-4"]
-};
+// const trueData = {
+// 	tasks: {
+// 		"task-1": { id: "task-1", description: "Take out the garbage" },
+// 		"task-2": { id: "task-2", description: "Watch my favorite show" },
+// 		"task-3": { id: "task-3", description: "Charge my phone" },
+// 		"task-4": { id: "task-4", description: "Cook dinner" },
+// 	},
+// 	columns: {
+// 		"column-1": {
+// 			id: "column-1",
+// 			title: StatusOptions.UNFINISHED,
+// 			taskIds: ["task-1", "task-2", "task-3", "task-4"],
+// 		},
+// 		"column-2": {
+// 			id: "column-2",
+// 			title: StatusOptions.INPROGRESS,
+// 			taskIds: [],
+// 		},
+// 		"column-3": {
+// 			id: "column-3",
+// 			title: StatusOptions.REVIEWING,
+// 			taskIds: [],
+// 		},
+//     "column-4": {
+// 			id: "column-4",
+// 			title: StatusOptions.DONE,
+// 			taskIds: [],
+// 		},
+// 	},
+//   columnOrder: ["column-1", "column-2", "column-3", "column-4"]
+// };
 
 const fetchData = async () => {
 	let { data: tasks } = await supabase
@@ -67,8 +67,6 @@ const fetchData = async () => {
 };
 
 const updateTasks = async (state: IData) => {
- 
-
 	let updatedDescriptions: {id: number, description: string}[] = [];
 
 	for (const key in state.tasks) {
@@ -133,11 +131,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		columnOrder: ["column-1", "column-2", "column-3", "column-4"]
 	};
 
-	if (req.body !== 'POST') {
-		await updateTasks(sampleData);
-	}
-	
-	const initialData = await fetchData();
-	console.log(trueData);
-  return res.status(200).json(initialData);
+	if (req.method === 'PUT') {
+		await updateTasks(req.body);
+	} 
+
+	const data = await fetchData();
+
+  return res.status(200).json(data);
 }
