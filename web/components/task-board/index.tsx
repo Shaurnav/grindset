@@ -145,7 +145,6 @@ export default function TaskBoard() {
         </div>
         {/* I wonder what's the better practice here */}
         <TaskAdd state={state} setState={setState} totalTasks={totalTasks} setTotalTasks={setTotalTasks}/>
-        <h1>{totalTasks}</h1>
       </React.StrictMode>
     </DragDropContext>
   );
