@@ -4,7 +4,6 @@ import styles from '@/styles/Home.module.scss'
 import Header from '@/components/header'
 import React from 'react'
 import TaskBoard from '@/components/task-board'
-import TaskAdd from '@/components/task-add'
 
 const inter = Inter({ subsets: ['latin'] })
 
